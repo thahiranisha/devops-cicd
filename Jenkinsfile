@@ -1,34 +1,43 @@
 pipeline {
-  agent any
+    agent any
 
-  environment {
+    environment {
         DOCKER_IMAGE = 'thahiranisha/gscomp347test2:latest'
     }
 
-  stages {
-    stage('Build') {
-      steps {
-        bat 'docker build -t my-flask-app .'
-        bat 'docker tag my-flask-app $DOCKER_BFLASK_IMAGE'
-      }
-    }
-    stage('Test') {
-      steps {
-        bat 'docker run my-flask-app python -m pytest app/tests/'
-      }
-    }
-    stage('Deploy') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: "${DOCKER_REGISTRY_CREDS}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-          bat "echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin docker.io"
-          bat 'docker push $DOCKER_BFLASK_IMAGE'
+    stages {
+        stage('Build') {
+            steps {
+                bat 'docker build -t my-first-image .'
+                bat 'docker tag my-first-image %DOCKER_IMAGE%'
+            }
         }
-      }
+
+        stage('Test') {
+            steps {
+                bat 'docker run --rm my-first-image'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-credentials',
+                        passwordVariable: 'DOCKER_PASSWORD',
+                        usernameVariable: 'DOCKER_USERNAME'
+                    )
+                ]) {
+                    bat '@echo off && echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin docker.io'
+                    bat 'docker push %DOCKER_IMAGE%'
+                }
+            }
+        }
     }
-  }
-  post {
-    always {
-      bat 'docker logout'
+
+    post {
+        always {
+            bat 'docker logout'
+        }
     }
-  }
 }
