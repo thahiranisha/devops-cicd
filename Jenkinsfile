@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_EXE = 'C:\\Users\\nisha_m\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
-        DOCKER_IMAGE = 'DOCKER_IMAGE = 'thahiranisha/gscomp347test2:latest''
+        DOCKER_IMAGE = 'thahiranisha/gscomp347test2:latest'
     }
 
     stages {
@@ -25,7 +25,7 @@ pipeline {
             steps {
                 withCredentials([
                     usernamePassword(
-                        credentialsId: 'dockerhub-credentials',
+                        credentialsId: 'dockerhub-gscomp347test2',
                         passwordVariable: 'DOCKER_PASSWORD',
                         usernameVariable: 'DOCKER_USERNAME'
                     )
