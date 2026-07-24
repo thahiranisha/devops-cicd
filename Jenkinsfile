@@ -30,7 +30,7 @@ pipeline {
                         usernameVariable: 'DOCKER_USERNAME'
                     )
                 ]) {
-                    bat '@echo off && echo %DOCKER_PASSWORD% | "%DOCKER_EXE%" login -u %DOCKER_USERNAME% --password-stdin docker.io'
+                    bat '@echo off && echo %DOCKER_PASSWORD%|"%DOCKER_EXE%" login -u %DOCKER_USERNAME% --password-stdin docker.io'
                     bat '"%DOCKER_EXE%" push %DOCKER_IMAGE%'
                 }
             }
