@@ -2,20 +2,22 @@ pipeline {
     agent any
 
     environment {
+        DOCKER_EXE = 'C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe'
         DOCKER_IMAGE = 'thahiranisha/gscomp347test2:latest'
     }
 
     stages {
         stage('Build') {
             steps {
-                bat 'docker build -t my-first-image .'
-                bat 'docker tag my-first-image %DOCKER_IMAGE%'
+                bat '"%DOCKER_EXE%" version'
+                bat '"%DOCKER_EXE%" build -t my-first-image .'
+                bat '"%DOCKER_EXE%" tag my-first-image %DOCKER_IMAGE%'
             }
         }
 
         stage('Test') {
             steps {
-                bat 'docker run --rm my-first-image'
+                bat '"%DOCKER_EXE%" run --rm my-first-image'
             }
         }
 
@@ -28,8 +30,8 @@ pipeline {
                         usernameVariable: 'DOCKER_USERNAME'
                     )
                 ]) {
-                    bat '@echo off && echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin docker.io'
-                    bat 'docker push %DOCKER_IMAGE%'
+                    bat '@echo off && echo %DOCKER_PASSWORD% | "%DOCKER_EXE%" login -u %DOCKER_USERNAME% --password-stdin docker.io'
+                    bat '"%DOCKER_EXE%" push %DOCKER_IMAGE%'
                 }
             }
         }
@@ -37,7 +39,12 @@ pipeline {
 
     post {
         always {
-            bat 'docker logout'
+            script {
+                bat(
+                    returnStatus: true,
+                    script: '"%DOCKER_EXE%" logout'
+                )
+            }
         }
     }
 }
