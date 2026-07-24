@@ -1,6 +1,10 @@
 pipeline {
   agent any
 
+  environment {
+        DOCKER_IMAGE = 'thahiranisha/gscomp347test2:latest'
+    }
+
   stages {
     stage('Build') {
       steps {
